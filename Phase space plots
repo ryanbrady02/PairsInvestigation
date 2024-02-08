@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from scipy.integrate import odeint
+
+def model(y, t, a, b, c, e, f, g, h, k):
+    Y, Z, M = y
+    dydt = c / (a + b * M) - k * Y
+    dzdt = e * Y - f * Z
+    dmdt = g * Z - h * M
+    return [dydt, dzdt, dmdt]
+
+# Define parameters
+parameters = (1, 100, 1, 1, 1, 1, 1, 1)
+
+# Initial conditions
+initial_conditions = [0.0, 0.0, 0.0]
+
+# Time points to solve the equations
+t = np.linspace(0, 10, 1000)
+
+# Solve the system of differential equations
+solution = odeint(model, initial_conditions, t, args=parameters)
+
+# Extract solutions for Y, Z, and M
+Y, Z, M = solution.T
+
+# Plotting phase space in 3D
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(Y, Z, M, label='Phase Space Trajectory', linewidth=2)
+ax.set_xlabel('mRNA (Y)', fontsize=24)
+ax.set_ylabel('Protein (Z)', fontsize=24)
+ax.set_zlabel('Repressor (M)', fontsize=24)
+ax.set_title('3D Phase Space Plot', fontsize=24)
+ax.legend(fontsize=20)
+plt.savefig('non-oscillation Y-Z-M')
+plt.show()
+
+# Plotting limit cycle in 2D (mRNA vs. Protein)
+plt.figure(figsize=(10, 6))
+plt.plot(Y, Z, label='Limit Cycle')
+plt.title('Limit Cycle in 2D Phase Space (mRNA vs. Protein)', fontsize=16)
+plt.xlabel('mRNA (Y)', fontsize=14)
+plt.ylabel('Protein (Z)', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.show()
+
